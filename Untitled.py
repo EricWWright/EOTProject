@@ -73,7 +73,7 @@ class Application(Frame):
 
     def attack(self):
         """ Attacks the monster and subtracts monter health. """
-        if Player.playerDamage >= (Monster.mHealth + Monster.mArmor):
+        if Player.playerDamage >= (mHealth + mArmor):
              print("The monster is dead")
              mHealth = 0
         elif pDamage < (mHealth + mArmor):
