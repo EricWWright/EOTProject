@@ -8,31 +8,27 @@ from random import *
 
 ###########################################################################################################
 # Global Vars
-
 inventory = []
 
 ###########################################################################################################
-class Player():
-    """ Creates player object and gives player attrbutes. """
-    def __init__(self):
-        self.pHealth = 100
-        self.pArmor = 0
-    
-    def playerDamage(self):
-        """ Calculates how much damage the player does to the monster. """
-        pDamage = randrange(5, 30)
-        return pDamage
-    
-class Monster():
-    """ Creates monster object and gives monster attributes. """
-    def __init__(self):
-        self.mHealth = randrange(30, 100)
-        self.mArmor = 0
-    def monsterDamage(self):
-        """ Calculates how much damage the monster does to the player. """
-        mDamage = randrange(0, 25)
-        return mDamage
-    
+# class Character():
+
+#     def __init__(self, health):
+#         self.health = health
+
+# class Player(Character):
+
+#     def __init__(self, defense, health=100):
+#         super().__init__(health)
+#         self.defense = defense
+
+# class Monster(Character):
+
+#     def __init__(self, name, strength, defense, health):
+#         super().__init__(health)
+#         self.name = name
+#         self.strength = strength
+#         self.defense = defense
 
 class Application(Frame):
     """ GUI game where you fight monsters. """
@@ -42,6 +38,10 @@ class Application(Frame):
         super(Application, self).__init__(master)
         self.grid()
         self.create_widget()
+        self.displayText = ""
+        self.mHealth = randrange(30, 100)
+        self.mArmor = 0
+        self.mDamage = randrange(0, 25)
 
     def create_widget(self):
         self.textOut = Text(self)
@@ -57,8 +57,8 @@ class Application(Frame):
         self.bttnAttack.grid(row=1, column=1, columnspan=2, sticky=NSEW)
 
         self.bttnBlock = Button(self)
-        self.bttnBlock["text"] = "Block"
-        self.bttnBlock["command"] = self.block
+        self.bttnBlock["text"] = "Defend"
+        self.bttnBlock["command"] = self.defend
         self.bttnBlock.grid(row=1, column=3, columnspan=2, sticky=NSEW)
 
         self.bttnItem = Button(self)
@@ -71,26 +71,56 @@ class Application(Frame):
         self.bttnRun["command"] = self.run
         self.bttnRun.grid(row=2, column=1, columnspan=2, sticky=NSEW)
 
-    def attack(self):
-        """ Attacks the monster and subtracts monter health. """
-        if Player.playerDamage >= (mHealth + mArmor):
-             print("The monster is dead")
-             mHealth = 0
-        elif pDamage < (mHealth + mArmor):
-            print("The monster takes:", pDamage)
-            mHealth = (mHealth + mArmor) - pDamage
-            print("The monster now has:", mHealth, "health")
+        self.bttnMonster = Button(self)
+        self.bttnMonster["text"] = "New Monster"
+        self.bttnMonster["command"] = self.monster
+        self.bttnMonster.grid(row=4, column=1, columnspan=2, sticky=NSEW)
 
-    def block(self):
+    def attack(self):
+        pDamage = randrange(5, 30)
+        """ Attacks the monster and subtracts monter health. """
+        if pDamage >= (self.mHealth + self.mArmor):
+            dropItems = ("HP-potion", "DEF-potion", "ATK-potion")
+            invetory.append(random.choice(dropItems))
+            self.mHealth = 0
+            self.displayText += "\nYou have slain the monster\nThe monster has droped an item\nThe item has been added to your inventory"
+            self.textOut.delete(0.0, END)
+            self.textOut.insert(0.0, self.displayText)
+        elif pDamage < (self.mHealth + self.mArmor):
+            self.mHealth = (self.mHealth + self.mArmor) - pDamage
+            self.displayText += "\nThe monster takes: " + \
+                str(pDamage) + " damage" + \
+                "\nThe monster now has: " + \
+                str(self.mHealth) + " health\n"
+            self.textOut.delete(0.0, END)
+            self.textOut.insert(0.0, self.displayText)
+
+    def defend(self):
         """ Reduces damage from monster. """
 
     
     def item(self):
         """ Lets the user check their inventory and use items. """
+        self.displayText += "\n" + str(inventory) + "\n"
+        self.textOut.delete(0.0, END)
+        self.textOut.insert(0.0, self.displayText)
 
     def run(self):
         """ User runs away from the monster. """
+        self.displayText += "\nYou decide to run for your life\n"
+        self.textOut.delete(0.0, END)
+        self.textOut.insert(0.0, self.displayText)
+    
+    def monster(self):
+        """ Creates new monster """
+        self.displayText += "\nA new monster has appeared\n"
+        self.textOut.delete(0.0, END)
+        self.textOut.insert(0.0, self.displayText)
+        self.mHealth = randrange(50, 100)
+        self.mArmor = 15
+        self.mDamage = randrange(5, 25)
 
+# user = Player(0)
 root = Tk()
 root.title("Monster Fighter")
 root.geometry("760x800")
